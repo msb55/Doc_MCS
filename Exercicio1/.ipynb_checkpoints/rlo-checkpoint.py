@@ -29,6 +29,7 @@ class RLO(BaseEnsemble):
                     A, B = X[rp[0], :], X[rp[1], :]
                     self.H[f'H_{i}'] = np.hstack((A - B, (B@B.T - A@A.T)/2))
                     left = np.hstack((X, np.ones((N, 1)))) @ self.H[f'H_{i}'].T > 0
+                    #print(left)
                     classificador_left = self.base_estimator
                     classificador_right = self.base_estimator
                     self.E[f'D_{i}']['left'] = classificador_left.fit(X[left, :], y[left])
