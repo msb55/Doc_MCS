@@ -15,7 +15,6 @@ class RLO(BaseEnsemble):
         super().__init__(
             base_estimator=base_estimator,
             n_estimators=n_estimators)
-        print('Built RLO')
             
     def fit(self, X, y):
         N = X.shape[0]
