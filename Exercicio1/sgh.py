@@ -3,6 +3,7 @@ from sklearn.linear_model import SGDClassifier
 import numpy as np
 from scipy.spatial.distance import pdist
 from scipy.spatial.distance import squareform
+from scipy.stats import mode
 from sklearn.utils.validation import check_X_y
 
 from math import sqrt
@@ -153,12 +154,23 @@ class SGH(BaseEnsemble):
 
         check_X_y(X, y)
         return self._fit(X, y, included_samples)
-
+    
+    def predict(self, X): #Simple majority vote prediction (by Lucas Amorim)
+        y_preds = []
+        for e in self.estimators_:
+            y_pred = e.predict(X)
+            y_preds.append(y_pred)
+        y_preds = np.array(y_preds).T
+        y_pred_ens = []
+        for i in range(X.shape[0]):
+            y_pred_ens.append(mode(y_preds[i]).mode[0])
+        return np.array(y_pred_ens)
+    
     def _fit(self, X, y, included_samples):
         
         # Set base estimator as the Perceptron
         # alterei max_iter=1 para 10.
-        self.base_estimator_ = SGDClassifier(loss="perceptron", eta0=1.e-17,max_iter=10, learning_rate="constant", penalty=None)
+        self.base_estimator_ = SGDClassifier(loss="perceptron", eta0=1.e-17,max_iter=1, learning_rate="constant", penalty=None)
 
         # If there is no indication of which instances to include in the training, include all
         if included_samples.sum() == 0:
